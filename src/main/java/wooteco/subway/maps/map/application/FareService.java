@@ -9,13 +9,23 @@ import org.springframework.stereotype.Service;
 import wooteco.subway.maps.line.application.LineService;
 import wooteco.subway.maps.line.domain.Line;
 import wooteco.subway.maps.map.domain.LineStationEdge;
+import wooteco.subway.maps.map.domain.SubwayPath;
 
 @Service
 public class FareService {
+    private static final int DEFAULT_FARE = 1250;
+
     private LineService lineService;
 
     public FareService(LineService lineService) {
         this.lineService = lineService;
+    }
+
+    public int calculate(SubwayPath subwayPath, int age) {
+        int distance = subwayPath.calculateDistance();
+        List<LineStationEdge> lineStationEdges = subwayPath.getLineStationEdges();
+        return calculateByAge(
+            DEFAULT_FARE + calculateByDistance(distance) + calculateByExtraFare(distance, lineStationEdges), age);
     }
 
     public int calculateByDistance(int distance) {

@@ -42,6 +42,8 @@ public class MapServiceTest {
 
     private SubwayPath subwayPath;
 
+    private FareService fareService;
+
     @BeforeEach
     void setUp() {
         stations = new HashMap<>();
@@ -73,8 +75,9 @@ public class MapServiceTest {
                 new LineStationEdge(lineStation7, line3.getId())
         );
         subwayPath = new SubwayPath(lineStations);
+        fareService = new FareService(lineService);
 
-        mapService = new MapService(lineService, stationService, pathService);
+        mapService = new MapService(lineService, stationService, pathService, fareService);
     }
 
     @Test

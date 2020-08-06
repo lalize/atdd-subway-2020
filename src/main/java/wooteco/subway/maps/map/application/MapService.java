@@ -1,6 +1,12 @@
 package wooteco.subway.maps.map.application;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import wooteco.subway.maps.line.application.LineService;
 import wooteco.subway.maps.line.domain.Line;
 import wooteco.subway.maps.line.dto.LineResponse;
@@ -13,11 +19,6 @@ import wooteco.subway.maps.map.dto.PathResponseAssembler;
 import wooteco.subway.maps.station.application.StationService;
 import wooteco.subway.maps.station.domain.Station;
 import wooteco.subway.maps.station.dto.StationResponse;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,11 +26,14 @@ public class MapService {
     private LineService lineService;
     private StationService stationService;
     private PathService pathService;
+    private FareService fareService;
 
-    public MapService(LineService lineService, StationService stationService, PathService pathService) {
+    public MapService(LineService lineService, StationService stationService,
+        PathService pathService, FareService fareService) {
         this.lineService = lineService;
         this.stationService = stationService;
         this.pathService = pathService;
+        this.fareService = fareService;
     }
 
     public MapResponse findMap() {
@@ -48,7 +52,7 @@ public class MapService {
         SubwayPath subwayPath = pathService.findPath(lines, source, target, type);
         Map<Long, Station> stations = stationService.findStationsByIds(subwayPath.extractStationId());
 
-        return PathResponseAssembler.assemble(subwayPath, stations);
+        return PathResponseAssembler.assemble(subwayPath, stations, fareService.calculate(subwayPath, 19));
     }
 
     private Map<Long, Station> findStations(List<Line> lines) {

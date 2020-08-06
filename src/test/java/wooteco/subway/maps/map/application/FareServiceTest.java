@@ -80,4 +80,11 @@ public class FareServiceTest {
         assertThat(fareService.calculateByAge(1250, 18)).isEqualTo(720);
         assertThat(fareService.calculateByAge(1250, 19)).isEqualTo(1250);
     }
+
+    @Test
+    void calculate() {
+        when(lineService.findLines()).thenReturn(lines);
+        SubwayPath oneToFour = pathService.findPath(lines, 1L, 4L, PathType.DISTANCE);
+        assertThat(fareService.calculate(oneToFour, 19)).isEqualTo(900 + 1250 + 400);
+    }
 }
