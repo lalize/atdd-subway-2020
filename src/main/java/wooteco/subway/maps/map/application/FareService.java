@@ -43,4 +43,17 @@ public class FareService {
             .orElseThrow(RuntimeException::new)
             .getExtraFare();
     }
+
+    public int calculateByAge(int fare, int age) {
+        if (age >= 19) {
+            return fare;
+        }
+        if (age >= 13) {
+            return (int)((fare - 350) * 0.8);
+        }
+        if (age >= 6) {
+            return (int)((fare - 350) * 0.5);
+        }
+        return 0;
+    }
 }

@@ -70,4 +70,14 @@ public class FareServiceTest {
         assertThat(fareService.calculateByExtraFare(oneToFour.calculateDistance(), oneToFour.getLineStationEdges())).isEqualTo(500);
         assertThat(fareService.calculateByExtraFare(twoToFour.calculateDistance(), twoToFour.getLineStationEdges())).isEqualTo(900);
     }
+
+    @Test
+    void calculateByAge() {
+        assertThat(fareService.calculateByAge(1250, 5)).isEqualTo(0);
+        assertThat(fareService.calculateByAge(1250, 6)).isEqualTo(450);
+        assertThat(fareService.calculateByAge(1250, 12)).isEqualTo(450);
+        assertThat(fareService.calculateByAge(1250, 13)).isEqualTo(720);
+        assertThat(fareService.calculateByAge(1250, 18)).isEqualTo(720);
+        assertThat(fareService.calculateByAge(1250, 19)).isEqualTo(1250);
+    }
 }
