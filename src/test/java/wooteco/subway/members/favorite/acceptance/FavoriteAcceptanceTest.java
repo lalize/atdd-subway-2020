@@ -1,21 +1,21 @@
 package wooteco.subway.members.favorite.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import static wooteco.subway.maps.line.acceptance.step.LineStationAcceptanceStep.*;
+import static wooteco.subway.members.favorite.acceptance.step.FavoriteAcceptanceStep.*;
+import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import wooteco.subway.common.acceptance.AcceptanceTest;
+
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import wooteco.security.core.TokenResponse;
+import wooteco.subway.common.acceptance.AcceptanceTest;
 import wooteco.subway.maps.line.acceptance.step.LineAcceptanceStep;
 import wooteco.subway.maps.line.dto.LineResponse;
 import wooteco.subway.maps.station.acceptance.step.StationAcceptanceStep;
 import wooteco.subway.maps.station.dto.StationResponse;
-
-import static wooteco.subway.maps.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
-import static wooteco.subway.members.favorite.acceptance.step.FavoriteAcceptanceStep.*;
-import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.로그인_되어_있음;
-import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.회원_등록되어_있음;
 
 @DisplayName("즐겨찾기 관련 기능")
 public class FavoriteAcceptanceTest extends AcceptanceTest {
@@ -86,7 +86,7 @@ public class FavoriteAcceptanceTest extends AcceptanceTest {
     }
 
     private Long 지하철_노선_등록되어_있음(String name, String color) {
-        ExtractableResponse<Response> createLineResponse1 = LineAcceptanceStep.지하철_노선_등록되어_있음(name, color);
+        ExtractableResponse<Response> createLineResponse1 = LineAcceptanceStep.지하철_노선_등록되어_있음(name, color, "0");
         return createLineResponse1.as(LineResponse.class).getId();
     }
 
