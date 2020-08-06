@@ -80,6 +80,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
         총_거리와_소요_시간을_함께_응답함(response, 4, 3);
     }
 
+    @DisplayName("출발역과 도착역의 거리별 요금을 조회한다.")
+    @Test
+    void getFare() {
+        //when
+        ExtractableResponse<Response> distancePath = 거리_경로_조회_요청("DISTANCE", 1L, 3L);
+        ExtractableResponse<Response> durationPath = 거리_경로_조회_요청("DURATION", 1L, 3L);
+
+        //then
+        적절한_경로를_응답(distancePath, Lists.newArrayList(교대역, 남부터미널역, 양재역));
+        총_요금을_응답함(distancePath, 1250);
+        적절한_경로를_응답(durationPath, Lists.newArrayList(교대역, 강남역, 양재역));
+        총_요금을_응답함(durationPath, 1250);
+    }
+
     private Long 지하철_노선_등록되어_있음(String name, String color, String extraFare) {
         ExtractableResponse<Response> createLineResponse1 = LineAcceptanceStep.지하철_노선_등록되어_있음(name, color, extraFare);
         return createLineResponse1.as(LineResponse.class).getId();
