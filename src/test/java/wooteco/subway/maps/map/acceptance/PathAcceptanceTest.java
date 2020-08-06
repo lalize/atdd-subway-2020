@@ -62,7 +62,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되어_있음(삼호선, 교대역, 남부터미널역, 1, 2);
         지하철_노선에_지하철역_등록되어_있음(삼호선, 남부터미널역, 양재역, 2, 2);
 
-        회원_등록되어_있음(EMAIL, PASSWORD, 6);
+        회원_등록되어_있음(EMAIL, PASSWORD, 19);
         loginResponse = 로그인_되어_있음(EMAIL, PASSWORD);
     }
 
@@ -92,8 +92,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void getFareGuest() {
         //when
-        ExtractableResponse<Response> distancePath = 거리_경로_조회_요청("DISTANCE", 1L, 3L);
-        ExtractableResponse<Response> durationPath = 거리_경로_조회_요청("DURATION", 1L, 3L);
+        ExtractableResponse<Response> distancePath = 로그인_경로_조회_요청("DISTANCE", 1L, 3L, loginResponse);
+        ExtractableResponse<Response> durationPath = 로그인_경로_조회_요청("DURATION", 1L, 3L, loginResponse);
 
         //then
         적절한_경로를_응답(distancePath, Lists.newArrayList(교대역, 남부터미널역, 양재역));
