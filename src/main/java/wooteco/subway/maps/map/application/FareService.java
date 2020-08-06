@@ -14,6 +14,18 @@ import wooteco.subway.maps.map.domain.SubwayPath;
 @Service
 public class FareService {
     private static final int DEFAULT_FARE = 1250;
+    private static final int FIRST_OVER_FARE_START = 10;
+    private static final int FIRST_OVER_FARE_RANGE = 5;
+    private static final int SECOND_OVER_FARE_START = 50;
+    private static final int SECOND_OVER_FARE_RANGE = 8;
+    private static final int EXTRA_FARE = 100;
+    private static final int LINE_EXTRA_FARE_RANGE = 8;
+    private static final int DEDUCTION = 350;
+    private static final int CHILDREN = 6;
+    private static final int YOUTH = 13;
+    private static final int ADULT = 19;
+    private static final double CHILDREN_DISCOUNT_RATE = 0.5;
+    private static final double YOUTH_DISCOUNT_RATE = 0.8;
 
     private LineService lineService;
 
@@ -30,17 +42,19 @@ public class FareService {
 
     public int calculateByDistance(int distance) {
         int fare = 0;
-        if (distance > 10) {
-            fare += Math.ceil((Math.min(distance, 50) - 10) / 5) * 100;
+        if (distance > FIRST_OVER_FARE_START) {
+            fare +=
+                Math.ceil((Math.min(distance, SECOND_OVER_FARE_START) - FIRST_OVER_FARE_START) / FIRST_OVER_FARE_RANGE)
+                    * EXTRA_FARE;
         }
-        if (distance > 50) {
-            fare += Math.ceil((distance - 50) / 8) * 100;
+        if (distance > SECOND_OVER_FARE_START) {
+            fare += Math.ceil((distance - SECOND_OVER_FARE_START) / SECOND_OVER_FARE_RANGE) * EXTRA_FARE;
         }
         return fare;
     }
 
     public int calculateByExtraFare(int distance, List<LineStationEdge> lineStationEdges) {
-        if (distance < 8) {
+        if (distance < LINE_EXTRA_FARE_RANGE) {
             return 0;
         }
 
@@ -55,14 +69,14 @@ public class FareService {
     }
 
     public int calculateByAge(int fare, int age) {
-        if (age >= 19) {
+        if (age >= ADULT) {
             return fare;
         }
-        if (age >= 13) {
-            return (int)((fare - 350) * 0.8);
+        if (age >= YOUTH) {
+            return (int)((fare - DEDUCTION) * YOUTH_DISCOUNT_RATE);
         }
-        if (age >= 6) {
-            return (int)((fare - 350) * 0.5);
+        if (age >= CHILDREN) {
+            return (int)((fare - DEDUCTION) * CHILDREN_DISCOUNT_RATE);
         }
         return 0;
     }
