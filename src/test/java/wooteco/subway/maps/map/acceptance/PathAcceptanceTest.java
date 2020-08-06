@@ -2,6 +2,8 @@ package wooteco.subway.maps.map.acceptance;
 
 import static wooteco.subway.maps.line.acceptance.step.LineStationAcceptanceStep.*;
 import static wooteco.subway.maps.map.acceptance.step.PathAcceptanceStep.*;
+import static wooteco.subway.members.member.acceptance.MemberAcceptanceTest.*;
+import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.google.common.collect.Lists;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.security.core.TokenResponse;
 import wooteco.subway.common.acceptance.AcceptanceTest;
 import wooteco.subway.maps.line.acceptance.step.LineAcceptanceStep;
 import wooteco.subway.maps.line.dto.LineResponse;
@@ -25,6 +28,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 이호선;
     private Long 신분당선;
     private Long 삼호선;
+
+    private TokenResponse loginResponse;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -56,6 +61,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되어_있음(삼호선, null, 교대역, 0, 0);
         지하철_노선에_지하철역_등록되어_있음(삼호선, 교대역, 남부터미널역, 1, 2);
         지하철_노선에_지하철역_등록되어_있음(삼호선, 남부터미널역, 양재역, 2, 2);
+
+        회원_등록되어_있음(EMAIL, PASSWORD, 6);
+        loginResponse = 로그인_되어_있음(EMAIL, PASSWORD);
     }
 
     @DisplayName("두 역의 최단 거리 경로를 조회한다.")
@@ -82,7 +90,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("출발역과 도착역의 거리별 요금을 조회한다.")
     @Test
-    void getFare() {
+    void getFareGuest() {
         //when
         ExtractableResponse<Response> distancePath = 거리_경로_조회_요청("DISTANCE", 1L, 3L);
         ExtractableResponse<Response> durationPath = 거리_경로_조회_요청("DURATION", 1L, 3L);

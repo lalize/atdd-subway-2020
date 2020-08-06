@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import wooteco.security.core.TokenResponse;
 import wooteco.subway.maps.map.dto.PathResponse;
 import wooteco.subway.maps.station.dto.StationResponse;
 
@@ -23,6 +24,17 @@ public class PathAcceptanceStep {
                 then().
                 log().all().
                 extract();
+    }
+
+    public static ExtractableResponse<Response> 로그인_경로_조회_요청(String type, long source, long target, TokenResponse tokenResponse) {
+        return RestAssured.given().log().all().
+            auth().oauth2(tokenResponse.getAccessToken()).
+            accept(MediaType.APPLICATION_JSON_VALUE).
+            when().
+            get("/paths?source={sourceId}&target={targetId}&type={type}", source, target, type).
+            then().
+            log().all().
+            extract();
     }
 
     public static void 적절한_경로를_응답(ExtractableResponse<Response> response, ArrayList<Long> expectedPath) {
