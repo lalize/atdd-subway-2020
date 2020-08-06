@@ -1,9 +1,23 @@
 package wooteco.subway.maps.map.application;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+
+import wooteco.subway.maps.line.application.LineService;
+import wooteco.subway.maps.line.domain.Line;
+import wooteco.subway.maps.map.domain.LineStationEdge;
 
 @Service
 public class FareService {
+    private LineService lineService;
+
+    public FareService(LineService lineService) {
+        this.lineService = lineService;
+    }
+
     public int calculateByDistance(int distance) {
         int fare = 0;
         if (distance > 10) {
@@ -13,5 +27,20 @@ public class FareService {
             fare += Math.ceil((distance - 50) / 8) * 100;
         }
         return fare;
+    }
+
+    public int calculateByExtraFare(int distance, List<LineStationEdge> lineStationEdges) {
+        if (distance < 8) {
+            return 0;
+        }
+
+        List<Long> lineIds = lineStationEdges.stream().map(LineStationEdge::getLineId).collect(Collectors.toList());
+
+        return lineService.findLines()
+            .stream()
+            .filter(line -> lineIds.contains(line.getId()))
+            .max(Comparator.comparingInt(Line::getExtraFare))
+            .orElseThrow(RuntimeException::new)
+            .getExtraFare();
     }
 }

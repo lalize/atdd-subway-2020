@@ -1,6 +1,7 @@
 package wooteco.subway.maps.map.application;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +10,12 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.google.common.collect.Lists;
 import wooteco.subway.common.TestObjectUtils;
+import wooteco.subway.maps.line.application.LineService;
 import wooteco.subway.maps.line.domain.Line;
 import wooteco.subway.maps.line.domain.LineStation;
 import wooteco.subway.maps.map.domain.PathType;
@@ -24,6 +27,8 @@ public class FareServiceTest {
     private List<Line> lines;
     private PathService pathService;
     private FareService fareService;
+    @Mock
+    private LineService lineService;
 
     @BeforeEach
     void setUp() {
@@ -33,20 +38,20 @@ public class FareServiceTest {
         stations.put(3L, TestObjectUtils.createStation(3L, "C역"));
         stations.put(4L, TestObjectUtils.createStation(4L, "D역"));
 
-        Line line1 = TestObjectUtils.createLine(1L, "새로운선", "GREEN");
+        Line line1 = TestObjectUtils.createLine(1L, "새로운선", "GREEN", 500);
         line1.addLineStation(new LineStation(1L, null, 0, 0));
         line1.addLineStation(new LineStation(2L, 1L, 20, 3));
         line1.addLineStation(new LineStation(3L, 2L, 40, 5));
         line1.addLineStation(new LineStation(4L, 3L, 60, 8));
 
-        Line line2 = TestObjectUtils.createLine(2L, "새새로운선", "RED");
+        Line line2 = TestObjectUtils.createLine(2L, "새새로운선", "RED", 900);
         line2.addLineStation(new LineStation(2L, null, 0, 0));
         line2.addLineStation(new LineStation(4L, 2L, 10, 30));
 
         lines = Lists.newArrayList(line1, line2);
 
         pathService = new PathService();
-        fareService = new FareService();
+        fareService = new FareService(lineService);
     }
 
     @Test
@@ -55,5 +60,14 @@ public class FareServiceTest {
         SubwayPath durationPath = pathService.findPath(lines, 1L, 4L, PathType.DURATION);
         assertThat(fareService.calculateByDistance(distancePath.calculateDistance())).isEqualTo(400);
         assertThat(fareService.calculateByDistance(durationPath.calculateDistance())).isEqualTo(1600);
+    }
+
+    @Test
+    void calculateByExtraFare() {
+        when(lineService.findLines()).thenReturn(lines);
+        SubwayPath oneToFour = pathService.findPath(lines, 1L, 2L, PathType.DISTANCE);
+        SubwayPath twoToFour = pathService.findPath(lines, 2L, 4L, PathType.DISTANCE);
+        assertThat(fareService.calculateByExtraFare(oneToFour.calculateDistance(), oneToFour.getLineStationEdges())).isEqualTo(500);
+        assertThat(fareService.calculateByExtraFare(twoToFour.calculateDistance(), twoToFour.getLineStationEdges())).isEqualTo(900);
     }
 }
